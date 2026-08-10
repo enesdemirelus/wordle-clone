@@ -14,7 +14,7 @@ const page = () => {
 
   useEffect(() => {
     axios
-      .get("/api/get-word")
+      .get("/get-word")
       .then((response) => {
         setWord(response.data.word);
         setWordLoading(false);
@@ -27,7 +27,7 @@ const page = () => {
 
   const handleCheck = () => {
     axios
-      .get(`/api/check-word/${writtenWord}`)
+      .get(`/check-word/${writtenWord}`)
       .then((response) => {
         setIsValid(response.data.valid);
         setIsValidLoading(false);
