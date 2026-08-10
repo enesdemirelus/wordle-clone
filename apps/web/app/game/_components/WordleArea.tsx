@@ -36,6 +36,7 @@ function WordleArea() {
   const [boardRowIndex, setBoardRowIndex] = useState(0);
   const [isGameOver, setIsGameOver] = useState(false);
   const [correctWord, setCorrectWord] = useState(["", "", "", "", ""]);
+  const [hideCorrectWord, setHideCorrectWord] = useState(true);
 
   useEffect(() => {
     axios
@@ -49,6 +50,30 @@ function WordleArea() {
         console.error("API call failed:", error);
       });
   }, []);
+
+  const handleReset = () => {
+    setBoard([
+      ["", "", "", "", ""],
+      ["", "", "", "", ""],
+      ["", "", "", "", ""],
+      ["", "", "", "", ""],
+      ["", "", "", "", ""],
+      ["", "", "", "", ""],
+    ]);
+    setAccuracyBoard([
+      ["", "", "", "", ""],
+      ["", "", "", "", ""],
+      ["", "", "", "", ""],
+      ["", "", "", "", ""],
+      ["", "", "", "", ""],
+      ["", "", "", "", ""],
+    ]);
+    setIsRowSet([false, false, false, false, false, false]);
+    setBoardRowIndex(0);
+    setIsGameOver(false);
+    setWrittenWord("");
+    setError("");
+  };
 
   const handleCheck = () => {
     if (writtenWord.length != 5) {
@@ -128,7 +153,6 @@ function WordleArea() {
   return (
     <div>
       <div className="flex flex-col items-center gap-1 w-fit p-4">
-        <h1 className="text-white">Correct Word: {correctWord}</h1>
         {board.map((row, rowIndex) => (
           <div key={rowIndex} className="flex gap-1">
             {row.map((letter, letterIndex) => {
@@ -162,18 +186,47 @@ function WordleArea() {
             className="w-40 h-10 text-center uppercase tracking-widest font-mono bg-[rgb(51,51,52)] text-white border-[rgb(76,77,78)] placeholder:text-gray-400"
             value={writtenWord}
             onChange={(e) => setWrittenWord(e.target.value)}
+            onKeyDown={(e) => {
+              if (e.key === "Enter") {
+                handleCheck();
+              }
+            }}
             maxLength={5}
             disabled={isGameOver}
           />
           <Button
             onClick={handleCheck}
-            className="h-10 bg-white text-black hover:bg-gray-200"
+            className="h-10 bg-white text-black hover:bg-gray-200 cursor-pointer"
             disabled={isGameOver}
           >
             Check
           </Button>
+          <Button
+            onClick={handleReset}
+            className="h-10 bg-[rgb(180,60,60)] text-white hover:bg-[rgb(200,75,75)] cursor-pointer"
+            disabled={isGameOver}
+          >
+            Reset
+          </Button>
         </div>
-        <h1 className="text-red-500 mt-2">{error}</h1>
+        <h1 className="text-red-500 mt-1">{error}</h1>
+
+        <div className="mt-6 flex flex-col items-center gap-2">
+          <button
+            onClick={() => setHideCorrectWord(!hideCorrectWord)}
+            className="text-sm text-[rgb(120,120,120)] hover:text-white underline underline-offset-4 transition-colors duration-200 cursor-pointer"
+          >
+            {hideCorrectWord
+              ? "Hide the correct word"
+              : "Show the correct word"}
+          </button>
+
+          {!hideCorrectWord && (
+            <p className="text-white text-lg font-bold tracking-widest uppercase">
+              {Array.isArray(correctWord) ? correctWord.join("") : correctWord}
+            </p>
+          )}
+        </div>
       </div>
     </div>
   );
