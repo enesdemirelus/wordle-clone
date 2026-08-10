@@ -1,13 +1,16 @@
 "use client";
 import { Menu, Lightbulb, BarChart3, HelpCircle, Settings } from "lucide-react";
+import Link from "next/link";
 
 const Navbar = () => {
   return (
     <nav className="h-14 border-b-[1px] border-[rgb(58,58,58)] flex items-center justify-between px-4">
       <div className="flex items-center gap-4">
-        <button className="p-2 rounded-lg hover:bg-[rgb(51,51,51)] cursor-pointer">
-          <Menu className="w-7 h-7 text-white" />
-        </button>
+        <Link href="/">
+          <button className="p-2 rounded-lg hover:bg-[rgb(51,51,51)] cursor-pointer">
+            <Menu className="w-7 h-7 text-white" />
+          </button>
+        </Link>
       </div>
 
       <div className="flex items-center gap-2">
@@ -33,7 +36,7 @@ const Navbar = () => {
             )
           }
         >
-          Subscribe to Enes
+          made by Enes Demirel
         </button>
       </div>
     </nav>

@@ -73,15 +73,46 @@ function WordleArea() {
     setIsGameOver(false);
     setWrittenWord("");
     setError("");
+
+    if (isGameOver) {
+      axios
+        .get("/api/get-word")
+        .then((response) => {
+          const res = response.data.word;
+          const crrWord = res.toUpperCase().split("");
+          setCorrectWord(crrWord);
+        })
+        .catch((error) => {
+          console.error("API call failed:", error);
+        });
+    }
   };
 
-  const handleCheck = () => {
+  const isValid = async (word: string) => {
+    try {
+      const response = await axios.get(`/api/check-word/${word}`);
+      return response.data.valid;
+    } catch (error) {
+      console.error("API call failed:", error);
+      return false;
+    }
+  };
+
+  const handleCheck = async () => {
     if (writtenWord.length != 5) {
       setError("Please enter a word with length 5");
       return;
     }
 
     const word = writtenWord.toUpperCase().split("");
+    const wordString = writtenWord.toLowerCase();
+
+    const valid = await isValid(wordString);
+
+    if (!valid) {
+      setError("Not a valid word");
+      return;
+    }
 
     const freqMap: Record<string, number> = {};
 
@@ -202,7 +233,6 @@ function WordleArea() {
           <Button
             onClick={handleReset}
             className="h-10 bg-[rgb(180,60,60)] text-white hover:bg-[rgb(200,75,75)] cursor-pointer"
-            disabled={isGameOver}
           >
             Reset
           </Button>
