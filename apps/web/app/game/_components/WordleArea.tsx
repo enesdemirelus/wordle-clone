@@ -78,74 +78,72 @@ function WordleArea() {
   const handleCheck = () => {
     if (writtenWord.length != 5) {
       setError("Please enter a word with length 5");
-    } else {
-      const word = writtenWord.toUpperCase().split("");
+      return;
+    }
 
-      const freqMap: Record<string, number> = {};
+    const word = writtenWord.toUpperCase().split("");
 
-      for (const letter of correctWord) {
-        if (letter in freqMap) {
-          freqMap[letter]++;
-        } else {
-          freqMap[letter] = 1;
-        }
-      }
+    const freqMap: Record<string, number> = {};
 
-      for (let i = 0; i < word.length; i++) {
-        const index = i;
-        const letter = word[i];
-
-        if (letter == correctWord[index]) {
-          setAccuracyBoard((prevAccBoard) => {
-            const newAccBoard = [...prevAccBoard];
-            newAccBoard[boardRowIndex][index] = "C";
-            return newAccBoard;
-          });
-          freqMap[letter]--;
-        } else if (correctWord.includes(letter) && freqMap[letter] > 0) {
-          setAccuracyBoard((prevAccBoard) => {
-            const newAccBoard = [...prevAccBoard];
-            newAccBoard[boardRowIndex][index] = "I";
-            return newAccBoard;
-          });
-          freqMap[letter]--;
-        } else {
-          setAccuracyBoard((prevAccBoard) => {
-            const newAccBoard = [...prevAccBoard];
-            newAccBoard[boardRowIndex][index] = "W";
-            return newAccBoard;
-          });
-          freqMap[letter]--;
-        }
-      }
-
-      setBoard((prevBoard) => {
-        const newBoard = [...prevBoard];
-        newBoard[boardRowIndex] = word;
-        return newBoard;
-      });
-
-      setIsRowSet((prevArr) => {
-        const newArr = [...prevArr];
-        newArr[boardRowIndex] = true;
-        return newArr;
-      });
-
-      setWrittenWord("");
-      setError("");
-
-      const isCorrect = word.every((letter, i) => letter === correctWord[i]);
-      const next = boardRowIndex + 1;
-
-      if (isCorrect) {
-        setError("YOU GOT IT CORRECT!");
-        setIsGameOver(true);
-      } else if (next === 6) {
-        setError("Better Luck Next Time");
-        setIsGameOver(true);
+    for (const letter of correctWord) {
+      if (letter in freqMap) {
+        freqMap[letter]++;
       } else {
-        setBoardRowIndex(next);
+        freqMap[letter] = 1;
       }
+    }
+
+    const result = ["", "", "", "", ""];
+
+    for (let i = 0; i < word.length; i++) {
+      if (word[i] === correctWord[i]) {
+        result[i] = "C";
+        freqMap[word[i]]--;
+      }
+    }
+
+    for (let i = 0; i < word.length; i++) {
+      if (result[i] === "C") continue;
+      if (correctWord.includes(word[i]) && freqMap[word[i]] > 0) {
+        result[i] = "I";
+        freqMap[word[i]]--;
+      } else {
+        result[i] = "W";
+      }
+    }
+
+    setAccuracyBoard((prevAccBoard) => {
+      const newAccBoard = [...prevAccBoard];
+      newAccBoard[boardRowIndex] = result;
+      return newAccBoard;
+    });
+
+    setBoard((prevBoard) => {
+      const newBoard = [...prevBoard];
+      newBoard[boardRowIndex] = word;
+      return newBoard;
+    });
+
+    setIsRowSet((prevArr) => {
+      const newArr = [...prevArr];
+      newArr[boardRowIndex] = true;
+      return newArr;
+    });
+
+    setWrittenWord("");
+    setError("");
+
+    const isCorrect = word.every((letter, i) => letter === correctWord[i]);
+    const next = boardRowIndex + 1;
+
+    if (isCorrect) {
+      setError("YOU GOT IT CORRECT!");
+      setIsGameOver(true);
+    } else if (next === 6) {
+      setError("Better Luck Next Time");
+      setIsGameOver(true);
+    } else {
+      setBoardRowIndex(next);
     }
   };
 
@@ -217,8 +215,8 @@ function WordleArea() {
             className="text-sm text-[rgb(120,120,120)] hover:text-white underline underline-offset-4 transition-colors duration-200 cursor-pointer"
           >
             {hideCorrectWord
-              ? "Hide the correct word"
-              : "Show the correct word"}
+              ? "Show the correct word"
+              : "Hide the correct word"}
           </button>
 
           {!hideCorrectWord && (
