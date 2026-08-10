@@ -6,7 +6,7 @@ export default function GameLayout({
   children: React.ReactNode;
 }) {
   return (
-    <div className="bg-[rgb(19,19,20)] min-h-screen">
+    <div className="bg-[rgb(18,18,20)] min-h-screen">
       <Navbar />
       {children}
     </div>
